@@ -1,0 +1,29 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: AWS Twitter clone fullstack application - net.aws2020course.fullstack::Twaddler
+Globals:
+  Api:
+    EndpointConfiguration: REGIONAL
+Resources:
+  AwsTwaddleBackendFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: net.aws2020course.fullstack.StreamLambdaHandler::handleRequest
+      Runtime: java11
+      CodeUri: s3://twaddlebackend/aacbe92226cd7bb93aaa1ca11e4caa7f
+      MemorySize: 512
+      Policies: LambdaRoleS3Access
+      Timeout: 30
+      Events:
+        ProxyResource:
+          Type: Api
+          Properties:
+            Path: /{proxy+}
+            Method: any
+Outputs:
+  AwsTwaddlerApi:
+    Description: URL for application
+    Value:
+      Fn::Sub: http://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/stage/dev
+    Export:
+      Name: AwsTwaddlerApi
